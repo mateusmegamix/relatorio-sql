@@ -1,0 +1,100 @@
+-- tecbth_danielditz / senha treinamento --
+
+create table materialsinapi
+(
+codigo integer,
+descricao varchar(1024),
+unidade char(5),
+origempreco char(5),
+precomedio char(20),
+primary key (codigo)
+);
+
+*/--------------------Grupos-----------------------------------
+
+delete from externo.materialsinapi where codigo = 0 
+commit
+
+select * from compras.grupos
+insert into compras.grupos  (nome_grupo,data_alt,deletar,i_entidades)
+values                      (1,'grupo de tabelas'),
+                            (1,'data'),
+insert into compras.grupos   (i_grupo,nome_grupo,data_alt,deletar,i_entidades)
+on existing update
+values                       (55,'GRUPO DE TABELAS','2011-07-05 13:32:43.484000',0,1);
+
+*/----------------------Classes--------------------------------
+
+select * from compras.classes
+insert into compras.classes  (i_grupo,i_classe,nome_classe,espec_classe,reduz_cla,data_alt,deletar,i_entidades)
+
+values                      (55,1,'Sinapi insumos','SINAPI_Preco_Ref_Insumos_RJ_082018_NaoDesonerado',60,'2011-07-05 13:33:03.718000',0,1);
+
+*/----------------------Unimed---------------------------------
+
+select * from compras.material
+
+select * from compras.grupos
+
+select * from compras.classes
+
+select * from compras.unimed order by reduz_uni desc
+
+select number(),codigo+number(),* from externo.materialsinapi
+
+select distinct unidade from externo.materialsinapi
+except
+select distinct un_codi from compras.unimed
+
+insert into compras.unimed (un_codi,un_nome,un_padr,un_conv,reduz_uni,data_alt,deletar,codigo_tce,i_entidades,codigo_tce_sigla)
+on existing skip
+select unidade,unidade,null,null,44+number(),'2016-08-29 10:58:52.690000',0,null,1,null from externo.materialsinapi
+group by unidade
+order by unidade asc;
+
+*/----------------------Material-------------------------------
+
+--commit
+--rollback
+
+select * from externo.materialsinapi
+
+select * from compras.material
+select * from compras.grupos
+select * from compras.classes
+select * from compras.unimed
+
+select i_material,
+       i_grupo,
+       i_classe,
+       un_codi,
+       nome_mat,
+       espec_mat,
+       preco_unit,preco_med from compras.material
+order by i_material
+
+--
+
+insert into compras.material(i_material,i_grupo,i_classe,un_codi,nome_mat,espec_mat,mat_serv,mat_combust,mat_perecivel,estocavel,deletar,i_entidades,i_material_tce,preco_med,ativo)
+on existing update
+select 
+i_material= '55' || '01' || REPLICATE('0', 5 - length(number())) + RTrim(number()),
+un_codi=unidade,
+nome_mat=descricao,
+espec_mat=descricao,
+mat_serv='M',
+mat_combust='N',
+mat_perecivel='N',
+estocavel='S',
+deletar=0,
+i_entidades= 1,
+i_material_tce=1, --erro--
+preco_med=replace(precomedio,',','.'), --erro--
+ativo='S'
+from externo.materialsinapi
+
+--
+
+select i_material_tce,count(1) from compras.material group by i_material_tce order by 2
+
+--i_material=30300413+(row_number() over (order by codigo)),--

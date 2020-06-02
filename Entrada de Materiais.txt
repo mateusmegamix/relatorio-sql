@@ -1,0 +1,71 @@
+SELECT bethadba.materiais.codigo ,
+       bethadba.unidades.abreviatura,
+       bethadba.movimentos.quantidade,
+       bethadba.movimentos.vlrtotal,
+       bethadba.ccustos.mascara,  
+       descus = bethadba.ccustos.descricao,
+       bethadba.ccustos.endereco,
+       bethadba.estoques.nome,
+       bethadba.entradas.dataentrada,
+       bethadba.movimentos.i_entrada,
+       bethadba.entradas.i_estoque,
+       bethadba.entradas.obsentrada,
+       bethadba.entradas.nfiscal,
+       bethadba.entradas.i_fornecedor,
+       bethadba.entradas.i_natureza,
+       nome_fornecedor = bethadba.fornecedores.nome,
+       bethadba.movimentos.estornado,
+       bethadba.entradas.datanfiscal,
+       bethadba.entradas.i_reqcompras,
+       bethadba.naturezas.descricao,
+        
+       localilzacao = (
+       SELECT IF p.localizacao1 IS NULL THEN 'Sem Dados' ELSE p.localizacao1||'-'||p.localizacao2||'-'||p.localizacao3 END IF
+FROM bethadba.posicao p 
+
+WHERE p.i_material = movimentos.i_material AND 
+      p.i_classe = movimentos.i_classe AND 
+      p.i_estoque = entradas.i_estoque
+    ),
+       
+       /* ARGUMENTOS */
+       mat = IF :mat = 'D' THEN
+               bethadba.materiais.descricao
+             ELSE
+               bethadba.materiais.especificacao
+             END IF,
+       bethadba.entradas.i_sequ_aut,
+       bethadba.entradas.i_ano_aut,
+       bethadba.movimentos.i_lote,
+       lotes_datavalidade = ( SELECT bethadba.lotes.datavalidade
+                                FROM bethadba.lotes
+                               WHERE bethadba.lotes.i_entidades = bethadba.movimentos.i_entidades
+                                 AND bethadba.lotes.i_lote = bethadba.movimentos.i_lote ),
+       lotes_nrlote = ( SELECT bethadba.lotes.nrlote
+                          FROM bethadba.lotes
+                         WHERE bethadba.lotes.i_entidades = bethadba.movimentos.i_entidades
+                           AND bethadba.lotes.i_lote = bethadba.movimentos.i_lote )
+                       
+		/* ARGUMENTOS */
+		
+  FROM bethadba.entradas KEY LEFT OUTER JOIN
+       bethadba.fornecedores,
+       bethadba.movimentos KEY JOIN
+       bethadba.entradas,
+       bethadba.movimentos KEY JOIN
+       bethadba.materiais,
+       bethadba.materiais KEY JOIN
+       bethadba.unidades,
+       bethadba.entradas KEY JOIN
+       bethadba.ccustos,
+       bethadba.entradas KEY JOIN
+       bethadba.estoques,
+       bethadba.entradas KEY JOIN
+       bethadba.naturezas
+	   
+	   
+ WHERE movimentos.i_entidades = :cod_entidade
+   AND ( bethadba.movimentos.estornado = :Estor1
+    OR bethadba.movimentos.estornado = :Estor2 )
+   AND ( CAST ( bethadba.entradas.dataentrada AS DATE ) >= :DataIni )
+   AND ( CAST ( bethadba.entradas.dataentrada AS DATE ) <= :DataFin )

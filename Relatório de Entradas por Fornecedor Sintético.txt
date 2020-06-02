@@ -1,0 +1,37 @@
+ SELECT  bethadba.materiais.tipomaterial, 
+         bethadba.fornecedores.i_fornecedor,
+         bethadba.entradas.nfiscal,
+         bethadba.entradas.i_sequ_aut,
+         bethadba.entradas.i_ano_aut,
+         fornecedor_nome = IF bethadba.fornecedores,fornecedores.nome IS NULL THEN 'Sem dados do fornecedor' ELSE bethadba.fornecedores.nome END IF,
+         valor = sum(bethadba.movimentos.vlrtotal),
+         bethadba.entradas.i_estoque
+
+    FROM bethadba.entradas LEFT JOIN 
+         bethadba.fornecedores ON entradas.i_fornecedor = fornecedores.i_fornecedor, 
+         bethadba.movimentos, 
+         bethadba.materiais 
+
+   WHERE bethadba.movimentos.i_entrada = bethadba.entradas.i_entrada AND 
+         bethadba.movimentos.i_entidades = bethadba.entradas.i_entidades AND 
+         bethadba.movimentos.i_classe = bethadba.materiais.i_classe AND 
+         bethadba.movimentos.i_material = bethadba.materiais.i_material AND 
+         bethadba.movimentos.i_entidades = bethadba.materiais.i_entidades AND  
+         bethadba.entradas.dataentrada BETWEEN :data_ini AND :data_fim  AND
+         ((bethadba.entradas.i_sequ_aut = :sequautop AND bethadba.entradas.i_ano_aut = :anoautop) OR ( :sequautop = 0 AND :anoautop = 0)) AND
+         bethadba.movimentos.estornado = 'N'
+         
+GROUP BY bethadba.materiais.tipomaterial, 
+         bethadba.fornecedores.i_fornecedor,
+         bethadba.entradas.nfiscal,
+         bethadba.entradas.i_sequ_aut,
+         bethadba.entradas.i_ano_aut,
+         fornecedor_nome,                                                       
+         bethadba.entradas.i_estoque
+                                           
+ORDER BY bethadba.materiais.tipomaterial, 
+         bethadba.fornecedores.i_fornecedor,
+         fornecedor_nome,
+         bethadba.entradas.i_sequ_aut,
+         bethadba.entradas.i_ano_aut 
+		 bethadba.entradas.i_estoque
